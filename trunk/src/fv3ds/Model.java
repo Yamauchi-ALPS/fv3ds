@@ -49,28 +49,12 @@ public class Model
     public Model(File file)
         throws IOException, Fv3Exception
     {
-        super();
-        Reader r = new Reader(file);
-        this.name = r.name;
-        try {
-            this.read(r);
-        }
-        finally {
-            r.close();
-        }
+        this(new Reader(file));
     }
     public Model(String name, ByteBuffer source)
         throws Fv3Exception
     {
-        super();
-        Reader r = new Reader(name,source);
-        this.name = r.name;
-        try {
-            this.read(r);
-        }
-        finally {
-            r.close();
-        }
+        this(new Reader(name,source));
     }
     public Model(Reader r)
         throws Fv3Exception
