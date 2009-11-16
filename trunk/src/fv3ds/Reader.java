@@ -88,24 +88,41 @@ public final class Reader
     }
 
 
-    public byte readByte(Chunk cp) throws Fv3Exception {
+    public byte readS8(Chunk cp) throws Fv3Exception {
 
         return this.buffer.get(cp.pos++);
     }
-    public int readUnsignedShort(Chunk cp) throws Fv3Exception {
+    public int readU8(Chunk cp) throws Fv3Exception {
+
+        return (this.buffer.get(cp.pos++) & 0xff);
+    }
+    public int readU16(Chunk cp) throws Fv3Exception {
 
         return ((this.buffer.get(cp.pos++) & 0xff)
                 | ((this.buffer.get(cp.pos++) & 0xff) << 8));
     }
-    public int readInt(Chunk cp) throws Fv3Exception {
+    public short readS16(Chunk cp) throws Fv3Exception {
+
+        return (short)((this.buffer.get(cp.pos++) & 0xff)
+                       | ((this.buffer.get(cp.pos++) & 0xff) << 8));
+    }
+    public int readS32(Chunk cp) throws Fv3Exception {
 
         return ((this.buffer.get(cp.pos++) & 0xff)
                 | ((this.buffer.get(cp.pos++) & 0xff) << 8)
                 | ((this.buffer.get(cp.pos++) & 0xff) << 16)
                 | (this.buffer.get(cp.pos++) << 24));
     }
+    public int readU32(Chunk cp) throws Fv3Exception {
+
+        return (((this.buffer.get(cp.pos++) & 0xff)
+                 | ((this.buffer.get(cp.pos++) & 0xff) << 8)
+                 | ((this.buffer.get(cp.pos++) & 0xff) << 16)
+                 | (this.buffer.get(cp.pos++) << 24))
+                & Integer.MAX_VALUE);
+    }
     public float readFloat(Chunk cp) throws Fv3Exception {
-        return Float.intBitsToFloat(this.readInt(cp));
+        return Float.intBitsToFloat(this.readS32(cp));
     }
     public String readString(Chunk cp){
         StringBuilder strbuf = new StringBuilder();
@@ -137,8 +154,8 @@ public final class Reader
     public Chunk start() throws Fv3Exception {
         Chunk boot = new Chunk(this.length);
         int start = 0;
-        int id = this.readUnsignedShort(boot);
-        int len = this.readInt(boot);
+        int id = this.readU16(boot);
+        int len = this.readS32(boot);
         return new Chunk(start,id,len);
     }
     /**
@@ -148,8 +165,8 @@ public final class Reader
      */
     public Chunk next(Chunk cp) throws Fv3Exception {
         int start = cp.pos;
-        int id = this.readUnsignedShort(cp);
-        int len = this.readInt(cp);
+        int id = this.readU16(cp);
+        int len = this.readS32(cp);
         Chunk next = new Chunk(start,id,len);
         cp.pos = next.next;
         return next;

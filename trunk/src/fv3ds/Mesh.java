@@ -97,11 +97,11 @@ public final class Mesh
                 break;
             }
             case Chunk.MESH_COLOR: {
-                this.color = r.readByte(cp2);
+                this.color = r.readU8(cp2);
                 break;
             }
             case Chunk.POINT_ARRAY: {
-                int count = r.readUnsignedShort(cp2);
+                int count = r.readU16(cp2);
                 this.vertices = Vertex.Resize(this.vertices,count);
                 this.texcos = Vertex.Resize(this.texcos,count);
                 this.vflags = Vertex.Resize(this.vflags,count);
@@ -112,26 +112,26 @@ public final class Mesh
             }
 
             case Chunk.POINT_FLAG_ARRAY: {
-                int nflags = r.readUnsignedShort(cp2);
+                int nflags = r.readU16(cp2);
                 int count = ((this.vertices.length >= nflags)?(this.vertices.length):(nflags));
                 this.vertices = Vertex.Resize(this.vertices,count);
                 this.texcos = Vertex.Resize(this.texcos,count);
                 this.vflags = Vertex.Resize(this.vflags,count);
                 for (int i = 0; i < nflags; ++i) {
-                    this.vflags[i] = r.readUnsignedShort(cp2);
+                    this.vflags[i] = r.readU16(cp2);
                 }
                 break;
             }
 
             case Chunk.FACE_ARRAY: {
-                int nfaces = r.readUnsignedShort(cp2);
+                int nfaces = r.readU16(cp2);
                 this.faces = Face.New(nfaces);
                 for (int cc = 0; cc < nfaces; cc++){
                     Face face = this.faces[cc];
-                    face.index[0] = r.readUnsignedShort(cp2);
-                    face.index[1] = r.readUnsignedShort(cp2);
-                    face.index[2] = r.readUnsignedShort(cp2);
-                    face.flags = r.readUnsignedShort(cp2);
+                    face.index[0] = r.readU16(cp2);
+                    face.index[1] = r.readU16(cp2);
+                    face.index[2] = r.readU16(cp2);
+                    face.flags = r.readU16(cp2);
                 }
                 while (cp2.in()){
                     Chunk cp3 = r.next(cp2);
@@ -139,9 +139,9 @@ public final class Mesh
                     case Chunk.MSH_MAT_GROUP: {
                         String name = r.readString(cp3);
                         int material = model.indexOfMaterialForName(name);
-                        int n = r.readUnsignedShort(cp3);
+                        int n = r.readU16(cp3);
                         for (int cc = 0; cc < n; ++cc) {
-                            int index = r.readUnsignedShort(cp3);
+                            int index = r.readU16(cp3);
                             if (index < nfaces) {
                                 this.faces[index].material = material;
                             } 
@@ -150,7 +150,7 @@ public final class Mesh
                     }
                     case Chunk.SMOOTH_GROUP: {
                         for (int i = 0; i < nfaces; ++i) {
-                            this.faces[i].smoothing_group = r.readInt(cp3);
+                            this.faces[i].smoothing_group = r.readS32(cp3);
                         }
                         break;
                     }
@@ -169,7 +169,7 @@ public final class Mesh
             }
             case Chunk.MESH_TEXTURE_INFO: {
 
-                //FIXME: this.map_type = r.readUnsignedShort(cp2);
+                //FIXME: this.map_type = r.readU16(cp2);
 
                 for (int i = 0; i < 2; ++i) {
                     this.map_tile[i] = r.readFloat(cp2);
@@ -193,7 +193,7 @@ public final class Mesh
             }
 
             case Chunk.TEX_VERTS: {
-                int ntexcos = r.readUnsignedShort(cp2);
+                int ntexcos = r.readU16(cp2);
                 int count = ((this.vertices.length >= ntexcos)?(this.vertices.length):(ntexcos));
                 this.vertices = Vertex.Resize(this.vertices,count);
                 this.texcos = Vertex.Resize(this.texcos,count);

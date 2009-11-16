@@ -84,7 +84,7 @@ public final class Atmosphere
             this.layerFogNearY = r.readFloat(cp1);
             this.layerFogFarY = r.readFloat(cp1);
             this.layerFogDensity = r.readFloat(cp1);
-            this.layerFogFlags = r.readInt(cp1);
+            this.layerFogFlags = r.readS32(cp1);
             while (cp1.in()){
                 Chunk cp2 = r.next(cp1);
                 switch (cp2.id) {
