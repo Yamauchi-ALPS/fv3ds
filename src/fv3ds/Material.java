@@ -22,7 +22,7 @@
  */
 package fv3ds;
 
-public class Material
+public final class Material
     extends Object
 {
 

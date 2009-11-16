@@ -18,7 +18,7 @@
  */
 package fv3ds;
 
-public class Quat
+public final class Quat
     extends Object
     implements Fv3Math
 {

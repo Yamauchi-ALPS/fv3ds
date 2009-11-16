@@ -22,7 +22,7 @@
  */
 package fv3ds;
 
-public class Mesh
+public final class Mesh
     extends Object
 {
     public final String name;

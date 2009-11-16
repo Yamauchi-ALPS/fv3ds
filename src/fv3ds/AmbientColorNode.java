@@ -22,7 +22,7 @@
  */
 package fv3ds;
 
-public class AmbientColorNode
+public final class AmbientColorNode
     extends Node
 {
 

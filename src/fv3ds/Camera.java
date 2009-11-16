@@ -22,7 +22,7 @@
  */
 package fv3ds;
 
-public class Camera {
+public final class Camera {
 
     public final String name;
     public int         user_id;
@@ -31,10 +31,10 @@ public class Camera {
     public float[]     position = Vertex.New();
     public float[]     target = Vertex.New();
     public float       roll;
-    public float       fov;
-    public int         see_cone;
-    public float       near_range;
-    public float       far_range;
+    public float       fov = 45f;
+    public boolean     seeCone;
+    public float       nearRange;
+    public float       farRange;
 
 
     public Camera(Model model, Reader r, Chunk cp, String name){
@@ -46,6 +46,22 @@ public class Camera {
     public void read(Model model, Reader r, Chunk cp)
         throws Fv3Exception
     {
-
+        r.readVector(cp,this.position);
+        r.readVector(cp,this.target);
+        this.roll = r.readFloat(cp);
+        while (cp.in()){
+            Chunk cp2 = r.next(cp);
+            switch (cp2.id){
+            case Chunk.CAM_SEE_CONE: {
+                this.seeCone = true;
+                break;
+            }
+            case Chunk.CAM_RANGES: {
+                this.nearRange = r.readFloat(cp2);
+                this.farRange = r.readFloat(cp2);
+                break;
+            }
+            }
+        }
     }
 }

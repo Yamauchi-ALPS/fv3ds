@@ -22,7 +22,7 @@
  */
 package fv3ds;
 
-public class CameraNode
+public final class CameraNode
     extends Node
 {
 

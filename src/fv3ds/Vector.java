@@ -18,7 +18,7 @@
  */
 package fv3ds;
 
-public class Vector
+public final class Vector
     extends Object
     implements Fv3Math
 {

@@ -17,7 +17,7 @@
  */
 package fv3ds;
 
-public class Color {
+public final class Color {
 
     public final static int R = 0;
     public final static int G = 1;

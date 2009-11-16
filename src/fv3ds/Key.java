@@ -22,7 +22,7 @@
  */
 package fv3ds;
 
-public class Key
+public final class Key
     extends Object
 {
     public static enum Flags {

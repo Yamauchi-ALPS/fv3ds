@@ -22,7 +22,7 @@
  */
 package fv3ds;
 
-public class TextureMap
+public final class TextureMap
     extends Object
 {
     public enum Flags {

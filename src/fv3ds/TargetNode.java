@@ -22,7 +22,7 @@
  */
 package fv3ds;
 
-public class TargetNode
+public final class TargetNode
     extends Node
 {
 

@@ -22,7 +22,7 @@
  */
 package fv3ds;
 
-public class Viewport
+public final class Viewport
     extends Object
 {
     public final static int LAYOUT_MAX_VIEWS = 32;

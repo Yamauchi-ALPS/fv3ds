@@ -34,6 +34,4 @@ public enum AutoReflMapFlags {
     AutoReflMapFlags(int flag){
         this.flag = flag;
     }
-
-
 }
