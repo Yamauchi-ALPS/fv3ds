@@ -22,7 +22,7 @@
  */
 package fv3ds;
 
-public class Light
+public final class Light
     extends Object
 {
 

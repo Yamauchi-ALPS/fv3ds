@@ -20,7 +20,7 @@ package fv3ds;
 /**
  * 
  */
-public class Vertex {
+public final class Vertex {
 
     public static class Box {
 

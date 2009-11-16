@@ -22,7 +22,7 @@
  */
 package fv3ds;
 
-public class SpotlightNode
+public final class SpotlightNode
     extends Node
 {
 

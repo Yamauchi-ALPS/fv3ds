@@ -25,8 +25,9 @@ import java.nio.ByteBuffer;
 /**
  * 
  */
-public class Model
+public final class Model
     extends Object
+    implements Cloneable
 {
     public String name;
     public Mesh[] mesh = new Mesh[0];
@@ -275,7 +276,7 @@ public class Model
                         }
                         case Chunk.VIEWPORT_LAYOUT:
                         case Chunk.DEFAULT_VIEW: {
-                            //this.add(new Viewport());
+                            this.viewport = new Viewport(this,r,cp2);
                             break;
                         }
                         case Chunk.AMBIENT_NODE_TAG: 
@@ -333,6 +334,16 @@ public class Model
         else
             throw new Fv3Exception("Bad header (magic) not a 3DS file, '"+r.name+"'.");
     }
+    public Model clone(){
+        try {
+            Model model = (Model)super.clone();
+            //[TODO]//
+            return model;
+        }
+        catch (CloneNotSupportedException exc){
+            throw new InternalError();
+        }
+    }
 
     /**
      * Basic run test function
@@ -351,7 +362,7 @@ public class Model
                 System.exit(1);
             }
         }
-        System.err.println("Usage:  Scene --test file");
+        System.err.println("Usage:  Model --test <file> ");
         System.exit(1);
     }
 }

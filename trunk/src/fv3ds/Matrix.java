@@ -18,7 +18,7 @@
  */
 package fv3ds;
 
-public class Matrix
+public final class Matrix
     extends Object
     implements Fv3Math
 {

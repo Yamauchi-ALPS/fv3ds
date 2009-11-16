@@ -20,7 +20,7 @@ package fv3ds;
 /**
  * File format error.
  */
-public class Fv3Exception
+public final class Fv3Exception
     extends java.lang.RuntimeException
 {
     public Fv3Exception(String m) {

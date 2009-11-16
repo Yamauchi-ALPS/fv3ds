@@ -22,7 +22,7 @@
  */
 package fv3ds;
 
-public class Shadow
+public final class Shadow
     extends Object
 {
 

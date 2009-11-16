@@ -22,36 +22,110 @@
  */
 package fv3ds;
 
-public class Atmosphere
+public final class Atmosphere
     extends Object
 {
 
-    public int         use_fog;
-    public float[]     fog_color = Color.New();
-    public int         fog_background;
-    public float       fog_near_plane;
-    public float       fog_near_density;
-    public float       fog_far_plane;
-    public float       fog_far_density;
-    public int         use_layer_fog;
-    public int         layer_fog_flags;
-    public float[]     layer_fog_color = Color.New();
-    public float       layer_fog_near_y;
-    public float       layer_fog_far_y;
-    public float       layer_fog_density;
-    public int         use_dist_cue;
-    public int         dist_cue_background;     /* bool */
-    public float       dist_cue_near_plane;
-    public float       dist_cue_near_dimming;
-    public float       dist_cue_far_plane;
-    public float       dist_cue_far_dimming;
+    public boolean     useFog;
+    public float[]     fogColor = Color.New();
+    public boolean     fogBackground;
+    public float       fogNearPlane;
+    public float       fogNearDensity;
+    public float       fogFarPlane;
+    public float       fogFarDensity;
+    public boolean     useLayerFog;
+    public int         layerFogFlags;
+    public float[]     layerFogColor = Color.New();
+    public float       layerFogNearY;
+    public float       layerFogFarY;
+    public float       layerFogDensity;
+    public boolean     useDistCue;
+    public boolean     distCueBackground;
+    public float       distCueNearPlane;
+    public float       distCueNearDimming;
+    public float       distCueFarPlane;
+    public float       distCueFarDimming;
 
 
     public Atmosphere(Model model, Reader r, Chunk cp)
         throws Fv3Exception
     {
         super();
+        this.read(model,r,cp);
     }
 
+    public void read(Model model, Reader r, Chunk cp)
+        throws Fv3Exception
+    {
+        Chunk cp1 = r.next(cp);
+        switch (cp1.id){
+        case Chunk.FOG: {
+            this.fogNearPlane = r.readFloat(cp1);
+            this.fogNearDensity = r.readFloat(cp1);
+            this.fogFarPlane = r.readFloat(cp1);
+            this.fogFarDensity = r.readFloat(cp1);
+            while (cp1.in()){
+                Chunk cp2 = r.next(cp1);
+                switch (cp2.id) {
+                case Chunk.LIN_COLOR_F:
+                    r.readColor(cp2,this.fogColor);
+                    break;
+                case Chunk.COLOR_F:
+                    break;
+                case Chunk.FOG_BGND:
+                    this.fogBackground = true;
+                    break;
+                }
+            }
+            break;
+        }
+        case Chunk.LAYER_FOG: {
+            boolean lin = false;
+            this.layerFogNearY = r.readFloat(cp1);
+            this.layerFogFarY = r.readFloat(cp1);
+            this.layerFogDensity = r.readFloat(cp1);
+            this.layerFogFlags = r.readInt(cp1);
+            while (cp1.in()){
+                Chunk cp2 = r.next(cp1);
+                switch (cp2.id) {
+                case Chunk.LIN_COLOR_F:
+                    r.readColor(cp2, this.layerFogColor);
+                    lin = true;
+                    break;
+                case Chunk.COLOR_F:
+                    //if (!lin)..
+                    r.readColor(cp2, this.layerFogColor);
+                    break;
+                }
+            }
+            break;
+        }
+        case Chunk.DISTANCE_CUE: {
 
+            this.distCueNearPlane = r.readFloat(cp1);
+            this.distCueNearDimming = r.readFloat(cp1);
+            this.distCueFarPlane = r.readFloat(cp1);
+            this.distCueFarDimming = r.readFloat(cp1);
+
+            while (cp1.in()) {
+                Chunk cp2 = r.next(cp1);
+                switch (cp2.id) {
+                case Chunk.DCUE_BGND:
+                    this.distCueBackground = true;
+                    break;
+                }
+            }
+            break;
+        }
+        case Chunk.USE_FOG:
+            this.useFog = true;
+            break;
+        case Chunk.USE_LAYER_FOG:
+            this.useLayerFog = true;
+            break;
+        case Chunk.USE_DISTANCE_CUE:
+            this.useDistCue = true;
+            break;
+        }
+    }
 }

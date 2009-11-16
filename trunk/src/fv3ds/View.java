@@ -22,7 +22,7 @@
  */
 package fv3ds;
 
-public class View
+public final class View
     extends Object
 {
 

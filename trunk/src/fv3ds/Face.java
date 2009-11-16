@@ -22,7 +22,7 @@
  */
 package fv3ds;
 
-public class Face
+public final class Face
     extends Object
 {
     public static enum Flags {

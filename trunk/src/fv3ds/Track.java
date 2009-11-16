@@ -22,7 +22,7 @@
  */
 package fv3ds;
 
-public class Track
+public final class Track
     extends Object
 {
     public static enum Flags {

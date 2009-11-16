@@ -22,7 +22,7 @@
  */
 package fv3ds;
 
-public class OmnilightNode
+public final class OmnilightNode
     extends Node
 {
 

@@ -22,7 +22,7 @@
  */
 package fv3ds;
 
-public class MeshInstanceNode
+public final class MeshInstanceNode
     extends Node
 {
 

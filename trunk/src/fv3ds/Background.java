@@ -22,26 +22,100 @@
  */
 package fv3ds;
 
-public class Background
+public final class Background
     extends Object
+    implements Cloneable
 {
 
-    public int         use_bitmap;
-    public String      bitmap_name;
-    public int         use_solid;
-    public float[]     solid_color = Color.New();
-    public int         use_gradient;
-    public float       gradient_percent;
-    public float[]     gradient_top = Color.New();
-    public float[]     gradient_middle = Color.New();
-    public float[]     gradient_bottom = Color.New();
+    public boolean     useBitmap;
+    public String      bitmapName;
+    public boolean     useSolid;
+    public float[]     solidColor = Color.New();
+    public boolean     useGradient;
+    public float       gradientPercent;
+    public float[]     gradientTop = Color.New();
+    public float[]     gradientMiddle = Color.New();
+    public float[]     gradientBottom = Color.New();
 
 
     public Background(Model model, Reader r, Chunk cp)
         throws Fv3Exception
     {
         super();
+        this.read(model,r,cp);
     }
 
 
+    public void read(Model model, Reader r, Chunk cp)
+        throws Fv3Exception
+    {
+        Chunk cp1 = r.next(cp);
+        switch (cp1.id){
+        case Chunk.BIT_MAP:
+            this.bitmapName = r.readString(cp1);
+            break;
+        case Chunk.SOLID_BGND: {
+            boolean lin = false;
+            while (cp1.in()) {
+                Chunk cp2 = r.next(cp1);
+                switch (cp2.id) {
+                case Chunk.LIN_COLOR_F:
+                    r.readColor(cp2,this.solidColor);
+                    lin = true;
+                    break;
+                case Chunk.COLOR_F:
+                    //if(!lin)..
+                    r.readColor(cp2,this.solidColor);
+                    break;
+                }
+            }
+            break;
+        }
+        case Chunk.V_GRADIENT: {
+            int[] index = new int[2];
+            float[][][] col = new float[2][3][3];
+            int lin = 0;
+            this.gradientPercent = r.readFloat(cp1);
+            while (cp1.in()){
+                Chunk cp2 = r.next(cp1);
+                switch (cp2.id){
+                case Chunk.COLOR_F:
+                    r.readColor(cp2, col[0][index[0]]);
+                    index[0]++;
+                    break;
+                case Chunk.LIN_COLOR_F:
+                    r.readColor(cp2, col[1][index[1]]);
+                    index[1]++;
+                    lin = 1;
+                    break;
+                }
+            }
+            for (int i = 0; i < 3; ++i) {
+                this.gradientTop[i] = col[lin][0][i];
+                this.gradientMiddle[i] = col[lin][1][i];
+                this.gradientBottom[i] = col[lin][2][i];
+            }
+            break;
+        }
+        case Chunk.USE_BIT_MAP:
+            this.useBitmap = true;
+            break;
+        case Chunk.USE_SOLID_BGND:
+            this.useSolid = true;
+            break;
+        case Chunk.USE_V_GRADIENT:
+            this.useGradient = true;
+            break;
+        }
+    }
+    public Background clone(){
+        try {
+            Background background = (Background)super.clone();
+
+            return background;
+        }
+        catch (CloneNotSupportedException exc){
+            throw new InternalError();
+        }
+    }
 }
