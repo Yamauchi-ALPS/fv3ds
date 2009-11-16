@@ -27,29 +27,139 @@ public final class Viewport
 {
     public final static int LAYOUT_MAX_VIEWS = 32;
 
-    public int       layout_style;
-    public int       layout_active;
-    public int       layout_swap;
-    public int       layout_swap_prior;
-    public int       layout_swap_view;
-    public int[]     layout_position = {0,0};
-    public int[]     layout_size = {0,0};
-    public int       layout_nviews;
-    public View[]    layout_views;
-    public int       default_type;
-    public float[]   default_position = Vertex.New();
-    public float     default_width;
-    public float     default_horiz_angle;
-    public float     default_vert_angle;
-    public float     default_roll_angle;
-    public String    default_camera;
+    public int       layoutStyle;
+    public int       layoutActive;
+    public int       layoutSwap;
+    public int       layoutSwapPrior;
+    public int       layoutSwapView;
+    public int[]     layoutPosition = {0,0};
+    public int[]     layoutSize = {0,0};
+    public View[]    layoutViews;
+    public View.Type defaultType;
+    public float[]   defaultPosition = Vertex.New();
+    public float     defaultWidth;
+    public float     defaultHorizAngle;
+    public float     defaultVertAngle;
+    public float     defaultRollAngle;
+    public String    defaultCamera;
 
 
     public Viewport(Model model, Reader r, Chunk cp)
         throws Fv3Exception
     {
         super();
+        this.read(model,r,cp);
     }
 
 
+    public void read(Model model, Reader r, Chunk cp)
+        throws Fv3Exception
+    {
+        switch (cp.id){
+        case Chunk.VIEWPORT_LAYOUT: {
+            int cur = 0;
+            this.layoutStyle = r.readU16(cp);
+            this.layoutActive = r.readS16(cp);
+            cp.skip(4);
+            this.layoutSwap = r.readS16(cp);
+            cp.skip(4);
+            this.layoutSwapPrior = r.readS16(cp);
+            this.layoutSwapView = r.readS16(cp);
+            while (cp.in()) {
+                Chunk cp1 = r.next(cp);
+                switch (cp1.id) {
+                    case Chunk.VIEWPORT_SIZE: {
+                        this.layoutPosition[0] = r.readU16(cp1);
+                        this.layoutPosition[1] = r.readU16(cp1);
+                        this.layoutSize[0] = r.readU16(cp1);
+                        this.layoutSize[1] = r.readU16(cp1);
+                        break;
+                    }
+                    case Chunk.VIEWPORT_DATA_3: {
+                        if (cur < LAYOUT_MAX_VIEWS) {
+                            cp1.skip(4);
+                            this.layoutViews = View.Add(this.layoutViews,new View());
+                            this.layoutViews[cur].axisLock = r.readU16(cp1);
+                            this.layoutViews[cur].position[0] = r.readS16(cp1);
+                            this.layoutViews[cur].position[1] = r.readS16(cp1);
+                            this.layoutViews[cur].size[0] = r.readS16(cp1);
+                            this.layoutViews[cur].size[1] = r.readS16(cp1);
+                            this.layoutViews[cur].type = r.readU16(cp1);
+                            this.layoutViews[cur].zoom = r.readFloat(cp1);
+                            r.readVector(cp1, this.layoutViews[cur].center);
+                            this.layoutViews[cur].horizAngle = r.readFloat(cp1);
+                            this.layoutViews[cur].vertAngle = r.readFloat(cp1);
+                            this.layoutViews[cur].camera = r.readString(cp1);
+                            ++cur;
+                        }
+                        break;
+                    }
+                    case Chunk.VIEWPORT_DATA:
+                        /* 3DS R2 & R3 chunk unsupported */
+                        break;
+                }
+            }
+            break;
+        }
+
+        case Chunk.DEFAULT_VIEW: {
+            while (cp.in()) {
+                Chunk cp1 = r.next(cp);
+                switch (cp1.id) {
+                    case Chunk.VIEW_TOP: {
+                        this.defaultType = View.Type.TOP;
+                        r.readVector(cp1, this.defaultPosition);
+                        this.defaultWidth = r.readFloat(cp1);
+                        break;
+                    }
+                    case Chunk.VIEW_BOTTOM: {
+                        this.defaultType = View.Type.BOTTOM;
+                        r.readVector(cp1, this.defaultPosition);
+                        this.defaultWidth = r.readFloat(cp1);
+                        break;
+                    }
+                    case Chunk.VIEW_LEFT: {
+                        this.defaultType = View.Type.LEFT;
+                        r.readVector(cp1, this.defaultPosition);
+                        this.defaultWidth = r.readFloat(cp1);
+                        break;
+                    }
+                    case Chunk.VIEW_RIGHT: {
+                        this.defaultType = View.Type.RIGHT;
+                        r.readVector(cp1, this.defaultPosition);
+                        this.defaultWidth = r.readFloat(cp1);
+                        break;
+                    }
+                    case Chunk.VIEW_FRONT: {
+                        this.defaultType = View.Type.FRONT;
+                        r.readVector(cp1, this.defaultPosition);
+                        this.defaultWidth = r.readFloat(cp1);
+                        break;
+                    }
+                    case Chunk.VIEW_BACK: {
+                        this.defaultType = View.Type.BACK;
+                        r.readVector(cp1, this.defaultPosition);
+                        this.defaultWidth = r.readFloat(cp1);
+                        break;
+                    }
+                    case Chunk.VIEW_USER: {
+                        this.defaultType = View.Type.USER;
+                        r.readVector(cp1, this.defaultPosition);
+                        this.defaultWidth = r.readFloat(cp1);
+                        this.defaultHorizAngle = r.readFloat(cp1);
+                        this.defaultVertAngle = r.readFloat(cp1);
+                        this.defaultRollAngle = r.readFloat(cp1);
+                        break;
+                    }
+                    case Chunk.VIEW_CAMERA: {
+                        this.defaultType = View.Type.CAMERA;
+                        this.defaultCamera = r.readString(cp1);
+                        break;
+                    }
+                }
+            }
+            break;
+        }
+        }
+    }
 }

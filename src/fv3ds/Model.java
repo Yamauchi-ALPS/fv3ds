@@ -173,7 +173,7 @@ public final class Model
                         Chunk cp2 = r.next(cp1);
                         switch (cp2.id) {
                         case Chunk.MESH_VERSION: {
-                            this.meshVersion = r.readInt(cp2);
+                            this.meshVersion = r.readS32(cp2);
                             break;
                         }
                         case Chunk.MASTER_SCALE: {
@@ -260,18 +260,18 @@ public final class Model
                         Chunk cp2 = r.next(cp1);
                         switch (cp2.id) {
                         case Chunk.KFHDR: {
-                            this.keyfRevision = r.readUnsignedShort(cp2);
+                            this.keyfRevision = r.readU16(cp2);
                             this.name = r.readString(cp2);
-                            this.frames = r.readInt(cp2);
+                            this.frames = r.readS32(cp2);
                             break;
                         }
                         case Chunk.KFSEG: {
-                            this.segmentFrom = r.readInt(cp2);
-                            this.segmentTo = r.readInt(cp2);
+                            this.segmentFrom = r.readS32(cp2);
+                            this.segmentTo = r.readS32(cp2);
                             break;
                         }
                         case Chunk.KFCURTIME: {
-                            this.currentFrame = r.readInt(cp2);
+                            this.currentFrame = r.readS32(cp2);
                             break;
                         }
                         case Chunk.VIEWPORT_LAYOUT:
