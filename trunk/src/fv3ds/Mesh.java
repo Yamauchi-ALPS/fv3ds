@@ -22,6 +22,8 @@
  */
 package fv3ds;
 
+import java.nio.Buffer;
+
 public final class Mesh
     extends Object
 {
@@ -50,6 +52,8 @@ public final class Mesh
     public float     map_cylinder_height;
 
     private volatile Vertex.Box bounds;
+    private volatile float[][] normals;
+    private volatile Buffer fvVertices, fvNormals;
 
 
     public Mesh(Model model, Reader r, Chunk cp, String name)
@@ -61,6 +65,10 @@ public final class Mesh
     }
 
 
+    public void reset(){
+        this.bounds = null;
+        this.normals = null;
+    }
     public Vertex.Box bounds(){
         Vertex.Box bounds = this.bounds;
         if (null == bounds){
@@ -73,14 +81,36 @@ public final class Mesh
         }
         return bounds;
     }
-    public float[][] facesNormals(float[][] n){
-        for (int cc = 0, count = this.faces.length; cc < count; ++cc){
-            Vector.Normal(n[cc],
-                          this.vertices[this.faces[cc].index[0]],
-                          this.vertices[this.faces[cc].index[1]],
-                          this.vertices[this.faces[cc].index[2]]);
+    public float[][] normals(){
+        float[][] normals = this.normals;
+        if (null == normals){
+            int count = this.faces.length;
+            normals = new float[count][3] ;
+            for (int cc = 0; cc < count; ++cc){
+                Vector.Normal(normals[cc],
+                              this.vertices[this.faces[cc].index[0]],
+                              this.vertices[this.faces[cc].index[1]],
+                              this.vertices[this.faces[cc].index[2]]);
+            }
+            this.normals = normals;
         }
-        return n;
+        return normals;
+    }
+    public Buffer fvVertices(){
+        Buffer fvVertices = this.fvVertices;
+        if (null == fvVertices){
+            fvVertices = FV.Copy(this.vertices);
+            this.fvVertices = fvVertices;
+        }
+        return fvVertices;
+    }
+    public Buffer fvNormals(){
+        Buffer fvNormals = this.fvNormals;
+        if (null == fvNormals){
+            fvNormals = FV.Copy(this.normals);
+            this.fvNormals = fvNormals;
+        }
+        return fvNormals;
     }
     public void read(Model model, Reader r, Chunk cp)
         throws Fv3Exception
