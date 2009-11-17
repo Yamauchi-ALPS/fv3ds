@@ -68,6 +68,8 @@ public final class Mesh
     public void reset(){
         this.bounds = null;
         this.normals = null;
+        this.fvVertices = null;
+        this.fvNormals = null;
     }
     public Vertex.Box bounds(){
         Vertex.Box bounds = this.bounds;
@@ -107,7 +109,7 @@ public final class Mesh
     public Buffer fvNormals(){
         Buffer fvNormals = this.fvNormals;
         if (null == fvNormals){
-            fvNormals = FV.Copy(this.normals);
+            fvNormals = FV.Copy(this.normals());
             this.fvNormals = fvNormals;
         }
         return fvNormals;
