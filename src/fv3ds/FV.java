@@ -26,7 +26,9 @@ import java.nio.ByteBuffer;
 public final class FV
     extends Object
 {
-
+    /**
+     * Copy a data list into a direct memory buffer for OGL.
+     */
     public final static Buffer Copy(float[] list){
         int length = list.length;
         int size = (4 * length);
@@ -36,18 +38,32 @@ public final class FV
         }
         return direct;
     }
+    /**
+     * Copy a matrix or mesh into a direct memory buffer for OGL.
+     * 
+     * This works on both 
+     * <pre>
+     *   FV.Copy(vec1,vec2,vec3,vec4);
+     *   FV.Copy(color1,color2,color3);
+     * </pre>  and  <pre>
+     *   FV.Copy(matrix);
+     * </pre>
+     * Copy a list of lists in order.
+     * 
+     * @param args Has type "float[][]"
+     */
     public final static Buffer Copy(float[]... args){
         int argc = args.length;
         int count = 0;
-        for (int ax = 0; ax < argc; ax++){
-            float[] list = args[ax];
+        for (int aa = 0; aa < argc; aa++){
+            float[] list = args[aa];
             count += list.length;
         }
         int size = (4 * count);
         ByteBuffer direct = ByteBuffer.allocateDirect(size);
-        for (int ax = 0, bb = 0; ax < argc; ax++){
-            float[] list = (float[])args[ax];
-            for (int cc = 0, cz = list.length; cc < cz; cc++, bb += 4){
+        for (int aa = 0, bb = 0, cc, cz; aa < argc; aa++){
+            float[] list = args[aa];
+            for (cc = 0, cz = list.length; cc < cz; cc++, bb += 4){
                 direct.putFloat(bb,list[cc]);
             }
         }
