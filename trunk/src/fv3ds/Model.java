@@ -20,7 +20,9 @@ package fv3ds;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 /**
  * 
@@ -33,6 +35,7 @@ public final class Model
     public Mesh[] mesh = new Mesh[0];
     public Camera[] camera = new Camera[0];
     public Material[] material = new Material[0];
+    public Light[] light = new Light[0];
     public float[] constructionPlane = Vertex.New();
     public float[] ambient = Color.New();
     public int meshVersion;
@@ -45,6 +48,11 @@ public final class Model
     public Atmosphere atmosphere;
     public Viewport viewport;
     public Shadow shadow;
+
+    private volatile Vertex.Box bounds;
+    private volatile float[][] vertices, normals;
+    private volatile int indeces;
+    private volatile Buffer fvVertices, fvNormals;
 
 
     public Model(File file)
@@ -70,6 +78,75 @@ public final class Model
         }
     }
 
+
+    public void reset(){
+        this.bounds = null;
+        this.vertices = null;
+        this.normals = null;
+        this.fvVertices = null;
+        this.fvNormals = null;
+        for (Mesh m : this.mesh){
+            m.reset();
+        }
+    }
+    public Vertex.Box bounds(){
+        Vertex.Box bounds = this.bounds;
+        if (null == bounds){
+            bounds = new Vertex.Box(true);
+            this.bounds = bounds;
+            for (int cc = 0, count = this.mesh.length; cc < count; ++cc) {
+                Mesh m = this.mesh[cc];
+                Vertex.Box mb = m.bounds();
+                Vector.Min(bounds.min, mb.min);
+                Vector.Max(bounds.max, mb.max);
+            }
+        }
+        return bounds;
+    }
+    public int indeces(){
+        return this.indeces;
+    }
+    public float[][] vertices(){
+        float[][] vertices = this.vertices;
+        if (null == vertices){
+            this.indeces = 0;
+            Mesh[] mesh = this.mesh;
+            for (int cc = 0, count = mesh.length; cc < count; cc++){
+                float[][] mv = mesh[cc].vertices;
+                this.indeces += mv.length;
+                vertices = Vertex.Cat(vertices,mv);
+            }
+            this.vertices = vertices;
+        }
+        return vertices;
+    }
+    public float[][] normals(){
+        float[][] normals = this.normals;
+        if (null == normals){
+            Mesh[] mesh = this.mesh;
+            for (int cc = 0, count = mesh.length; cc < count; cc++){
+                normals = Vertex.Cat(normals,mesh[cc].normals());
+            }
+            this.normals = normals;
+        }
+        return normals;
+    }
+    public Buffer fvVertices(){
+        Buffer fvVertices = this.fvVertices;
+        if (null == fvVertices){
+            fvVertices = FV.Copy(this.vertices());
+            this.fvVertices = fvVertices;
+        }
+        return fvVertices;
+    }
+    public Buffer fvNormals(){
+        Buffer fvNormals = this.fvNormals;
+        if (null == fvNormals){
+            fvNormals = FV.Copy(this.normals());
+            this.fvNormals = fvNormals;
+        }
+        return fvNormals;
+    }
     protected void add(Mesh mesh) {
         if (null != mesh){
             Mesh[] list = this.mesh;
@@ -112,7 +189,40 @@ public final class Model
             }
         }
     }
-
+    protected void add(Light light) {
+        if (null != light){
+            Light[] list = this.light;
+            if (0 == list.length)
+                this.light = new Light[]{light};
+            else {
+                int len = list.length;
+                Light[] copier = new Light[len+1];
+                System.arraycopy(list,0,copier,0,len);
+                copier[len] = light;
+                this.light = copier;
+            }
+        }
+    }
+    public int countMesh(){
+        return this.mesh.length;
+    }
+    public boolean hasMesh(int idx){
+        return (-1 < idx && idx < this.mesh.length);
+    }
+    public Mesh getMesh(int idx){
+        Mesh[] mesh = this.mesh;
+        if (-1 < idx && idx < mesh.length)
+            return mesh[idx];
+        else
+            throw new ArrayIndexOutOfBoundsException(String.valueOf(idx)+'/'+String.valueOf(mesh.length));
+    }
+    public Mesh firstMesh(){
+        Mesh[] mesh = this.mesh;
+        if (0 != mesh.length)
+            return mesh[0];
+        else
+            return null;
+    }
     public Mesh getMeshForName(String name){
         for (int cc = 0, count = this.mesh.length; cc < count; cc++) {
             Mesh mesh = this.mesh[cc];
@@ -128,6 +238,26 @@ public final class Model
                 return cc;
         }
         return -1;
+    }
+    public int countCamera(){
+        return this.camera.length;
+    }
+    public boolean hasCamera(int idx){
+        return (-1 < idx && idx < this.camera.length);
+    }
+    public Camera getCamera(int idx){
+        Camera[] camera = this.camera;
+        if (-1 < idx && idx < camera.length)
+            return camera[idx];
+        else
+            throw new ArrayIndexOutOfBoundsException(String.valueOf(idx)+'/'+String.valueOf(camera.length));
+    }
+    public Camera firstCamera(){
+        Camera[] camera = this.camera;
+        if (0 != camera.length)
+            return camera[0];
+        else
+            return null;
     }
     public Camera getCameraForName(String name){
         for (int cc = 0, count = this.camera.length; cc < count; cc++) {
@@ -145,6 +275,26 @@ public final class Model
         }
         return -1;
     }
+    public int countMaterial(){
+        return this.material.length;
+    }
+    public boolean hasMaterial(int idx){
+        return (-1 < idx && idx < this.material.length);
+    }
+    public Material getMaterial(int idx){
+        Material[] material = this.material;
+        if (-1 < idx && idx < material.length)
+            return material[idx];
+        else
+            throw new ArrayIndexOutOfBoundsException(String.valueOf(idx)+'/'+String.valueOf(material.length));
+    }
+    public Material firstMaterial(){
+        Material[] material = this.material;
+        if (0 != material.length)
+            return material[0];
+        else
+            return null;
+    }
     public Material getMaterialForName(String name){
         for (int cc = 0, count = this.material.length; cc < count; cc++) {
             Material material = this.material[cc];
@@ -160,6 +310,60 @@ public final class Model
                 return cc;
         }
         return -1;
+    }
+    public int countLight(){
+        return this.light.length;
+    }
+    public boolean hasLight(int idx){
+        return (-1 < idx && idx < this.light.length);
+    }
+    public Light getLight(int idx){
+        Light[] light = this.light;
+        if (-1 < idx && idx < light.length)
+            return light[idx];
+        else
+            throw new ArrayIndexOutOfBoundsException(String.valueOf(idx)+'/'+String.valueOf(light.length));
+    }
+    public Light firstLight(){
+        Light[] light = this.light;
+        if (0 != light.length)
+            return light[0];
+        else
+            return null;
+    }
+    public Light getLightForName(String name){
+        for (int cc = 0, count = this.light.length; cc < count; cc++) {
+            Light light = this.light[cc];
+            if (name.equals(light.name))
+                return light;
+        }
+        return null;
+    }
+    public int indexOfLightForName(String name){
+        for (int cc = 0, count = this.light.length; cc < count; cc++) {
+            Light light = this.light[cc];
+            if (name.equals(light.name))
+                return cc;
+        }
+        return -1;
+    }
+    public Node[] listNodes(){
+        if (null != this.nodes)
+            return this.nodes.list();
+        else
+            return Node.List.Empty;
+    }
+    public Node[] listNodes(Node.Type type){
+        if (null != this.nodes)
+            return this.nodes.list(type);
+        else
+            return Node.List.Empty;
+    }
+    public Node firstNode(Node.Type type){
+        if (null != this.nodes)
+            return this.nodes.first(type);
+        else
+            return null;
     }
 
     public void read(Reader r) throws Fv3Exception {
@@ -255,7 +459,9 @@ public final class Model
                         }
                     }
                     break;
-                case Chunk.KFDATA:
+                case Chunk.KFDATA:{
+                    int numNodes = 0;
+
                     while (cp1.in()) {
                         Chunk cp2 = r.next(cp1);
                         switch (cp2.id) {
@@ -313,6 +519,7 @@ public final class Model
                             default:
                                 throw new Fv3Exception();
                             }
+                            node.node_id = numNodes++;
 
                             if (null != this.last) {
                                 this.last.next = node;
@@ -327,7 +534,30 @@ public final class Model
                         }
                         }
                     }
+                    /*
+                     */
+                    Node q, p, parent, nodes[] = this.listNodes();
+                    int parentIdx;
+                    Arrays.sort(nodes);
+                    p = this.last;
+                    while (null != p) {
+                        q = (Node)p.user_ptr;
+                        if (p.user_id != 65535) {
+                            parentIdx = Arrays.binarySearch(nodes,p.user_id);
+                            if (-1 < parentIdx) {
+                                parent = nodes[parentIdx];
+                                q.next = p.next;
+                                p.next = parent.childs;
+                                p.parent = parent;
+                                parent.childs = p;
+                            } 
+                        }
+                        p.user_id = 0;
+                        p.user_ptr = null;
+                        p = q;
+                    }
                     break;
+                }
                 }
             }
         }
@@ -343,26 +573,5 @@ public final class Model
         catch (CloneNotSupportedException exc){
             throw new InternalError();
         }
-    }
-
-    /**
-     * Basic run test function
-     */
-    public static void main(String[] test){
-        if (2 == test.length && "--test".equals(test[0])){
-            try {
-                File file = new File(test[1]);
-                Model model = new Model(file);
-                System.err.println("OK");
-                System.exit(0);
-            }
-            catch (Exception exc){
-                exc.printStackTrace();
-                System.err.println("ER");
-                System.exit(1);
-            }
-        }
-        System.err.println("Usage:  Model --test <file> ");
-        System.exit(1);
     }
 }

@@ -147,6 +147,59 @@ public final class Reader
         c[1] = this.readFloat(cp);
         c[2] = this.readFloat(cp);
     }
+    public float readPercentageS16(Chunk cp, float defaultValue){
+        while (cp.in()){
+            Chunk cp1 = this.next(cp);
+            switch (cp1.id){
+            case Chunk.INT_PERCENTAGE: {
+                int i = this.readS16(cp1);
+                return (float)(1.0 * i / 100.0);
+            }
+            }
+        }
+        return defaultValue;
+    }
+    public void readMaterialColor(Chunk cp, float[] rgb){
+        boolean lin = false;
+        while (cp.in()){
+            Chunk cp1 = this.next(cp);
+            switch (cp1.id){
+            case Chunk.LIN_COLOR_24: {
+                for (int i = 0; i < 3; ++i) {
+                    rgb[i] = 1.0f * this.readU8(cp1) / 255.0f;
+                }
+                lin = true;
+                break;
+            }
+            case Chunk.COLOR_24: {
+                /* gamma corrected color chunk
+                   replaced in 3ds R3 by LIN_COLOR_24
+                 */
+                if (!lin) {
+                    for (int i = 0; i < 3; ++i) {
+                        rgb[i] = 1.0f * this.readU8(cp1) / 255.0f;
+                    }
+                }
+                break;
+            }
+            case Chunk.LIN_COLOR_F: {
+                for (int i = 0; i < 3; ++i) {
+                    rgb[i] = this.readFloat(cp1);
+                }
+                lin = true;
+                break;
+            }
+            case Chunk.COLOR_F: {
+                if (!lin) {
+                    for (int i = 0; i < 3; ++i) {
+                        rgb[i] = this.readFloat(cp1);
+                    }
+                }
+                break;
+            }
+            }
+        }
+    }
     /**
      * Get a chunk for the head of the file.  User must validate that
      * the Chunk ID is 0x4D4D for a 3DS file.

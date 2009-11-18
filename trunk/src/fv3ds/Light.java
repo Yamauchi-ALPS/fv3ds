@@ -30,28 +30,28 @@ public final class Light
     public Object      user_ptr;
     public String      name;
     public int         object_flags; 
-    public int         spot_light;     /* bool */
-    public int         see_cone;
+    public boolean     spot_light;     /* bool */
+    public boolean     see_cone;
     public float[]     color = Color.New();
     public float[]     position = Vertex.New();
     public float[]     target = Vertex.New();
     public float       roll;
-    public int         off;              /* bool */
+    public boolean     off;              /* bool */
     public float       outer_range;
     public float       inner_range;
     public float       multiplier;
     /*const char**  excludes;*/
     public float       attenuation;
-    public int         rectangular_spot;   /* bool */
-    public int         shadowed;           /* bool */
+    public boolean     rectangular_spot;   /* bool */
+    public boolean     shadowed;           /* bool */
     public float       shadow_bias;
     public float       shadow_filter;
     public int         shadow_size;
     public float       spot_aspect;
-    public int         use_projector;
+    public boolean     use_projector;
     public String      projector;
-    public int         spot_overshoot;      /* bool */
-    public int         ray_shadows;         /* bool */
+    public boolean     spot_overshoot;      /* bool */
+    public boolean     ray_shadows;         /* bool */
     public float       ray_bias;
     public float       hotspot;
     public float       falloff;

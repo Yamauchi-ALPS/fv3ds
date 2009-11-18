@@ -38,5 +38,4 @@ public final class CameraNode
         super(Type.CAMERA);
     }
 
-
 }

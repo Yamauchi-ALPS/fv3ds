@@ -43,12 +43,22 @@ public final class Camera {
         this.read(model,r,cp);
     }
 
+
+    public boolean hasRanges(){
+        return (0f != this.nearRange || 0f != this.farRange);
+    }
     public void read(Model model, Reader r, Chunk cp)
         throws Fv3Exception
     {
         r.readVector(cp,this.position);
         r.readVector(cp,this.target);
         this.roll = r.readFloat(cp);
+        float s = r.readFloat(cp);
+        if (Fv3Math.EPSILON > Math.abs(s))
+            this.fov = 45f;
+        else
+            this.fov = (2400f / s);
+
         while (cp.in()){
             Chunk cp2 = r.next(cp);
             switch (cp2.id){

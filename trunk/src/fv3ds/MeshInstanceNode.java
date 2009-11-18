@@ -44,7 +44,7 @@ public final class MeshInstanceNode
 
     public MeshInstanceNode(){
         super(Type.MESH_INSTANCE);
+        this.name = "$$$DUMMY";
     }
-
 
 }

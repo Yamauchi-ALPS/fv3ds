@@ -20,12 +20,13 @@ package fv3ds;
 /**
  * 
  */
-public final class Vertex {
+public abstract class Vertex {
 
-    public static class Box {
+    public final static class Box {
 
-        public final Vertex min = new Vertex();
-        public final Vertex max = new Vertex();
+        public final float[] min = Vertex.New();
+        public final float[] max = Vertex.New();
+        private float[] center;
 
         public Box(){
             super();
@@ -33,14 +34,27 @@ public final class Vertex {
         public Box(boolean bounds){
             super();
             if (bounds){
-                this.min.vertex[0] = Float.MAX_VALUE;
-                this.min.vertex[1] = Float.MAX_VALUE;
-                this.min.vertex[2] = Float.MAX_VALUE;
+                this.min[0] = Float.MAX_VALUE;
+                this.min[1] = Float.MAX_VALUE;
+                this.min[2] = Float.MAX_VALUE;
 
-                this.max.vertex[0] = Float.MIN_VALUE;
-                this.max.vertex[1] = Float.MIN_VALUE;
-                this.max.vertex[2] = Float.MIN_VALUE;
+                this.max[0] = Float.MIN_VALUE;
+                this.max[1] = Float.MIN_VALUE;
+                this.max[2] = Float.MIN_VALUE;
             }
+        }
+
+
+        public void reset(){
+            this.center = null;
+        }
+        public float[] center(){
+            float[] center = this.center;
+            if (null == center){
+                center = Vector.Midpoint(this.max,this.min);
+                this.center = center;
+            }
+            return center;
         }
     }
 
@@ -87,11 +101,24 @@ public final class Vertex {
         else
             return v;
     }
+    public final static float[][] Cat(float[][] a, float[][] b){
+        if (null == a)
+            return b;
+        else if (null == b)
+            return a;
+        else {
+            int al = a.length;
+            int bl = b.length;
+            int ll = (al+bl);
+            float[][] c = new float[ll][];
+            System.arraycopy(a,0,c,0,al);
+            System.arraycopy(b,0,c,al,bl);
+            return c;
+        }
+    }
 
 
-    public float[] vertex = New.clone();
-
-    public Vertex(){
+    private Vertex(){
         super();
     }
 }

@@ -36,5 +36,4 @@ public final class OmnilightNode
         super(Type.OMNILIGHT);
     }
 
-
 }

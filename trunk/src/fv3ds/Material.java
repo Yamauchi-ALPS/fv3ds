@@ -25,51 +25,57 @@ package fv3ds;
 public final class Material
     extends Object
 {
+    public final static float DefaultAmbient = 0.588235f;
+    public final static float DefaultDiffuse = 0.588235f;
+    public final static float DefaultSpecular = 0.898039f;
+    public final static float DefaultShininess = 0.1f;
+    public final static float DefaultWireSize = 1.0f;
+    public final static int DefaultShading = 3;
 
     public int           user_id;
     public Object        user_ptr;
-    public String        name;                   /* Material name */
-    public float[]       ambient = {0f,0f,0f};   /* Material ambient reflectivity */
-    public float[]       diffuse = {0f,0f,0f};   /* Material diffuse reflectivity */
-    public float[]       specular = {0f,0f,0f};  /* Material specular reflectivity */
-    public float         shininess;              /* Material specular exponent */
-    public float         shin_strength;
-    public int           use_blur;
+    public String        name;                                  /* Material name */
+    public float[]       ambient = Color.New(DefaultAmbient);   /* Material ambient reflectivity */
+    public float[]       diffuse = Color.New(DefaultDiffuse);   /* Material diffuse reflectivity */
+    public float[]       specular = Color.New(DefaultSpecular); /* Material specular reflectivity */
+    public float         shininess = DefaultShininess;          /* Material specular exponent */
+    public float         shinStrength;
+    public boolean       useBlur;
     public float         blur;
     public float         transparency;
     public float         falloff;
-    public int           is_additive;
-    public int           self_illum_flag; /* bool */
-    public float         self_illum;
-    public int           use_falloff;
-    public int           shading;
-    public int           soften;         /* bool */
-    public int           face_map;       /* bool */
-    public int           two_sided;      /* Material visible from back */
-    public int           map_decal;      /* bool */
-    public int           use_wire;
-    public int           use_wire_abs;
-    public float         wire_size;
-    public TextureMap    texture1_map;
-    public TextureMap    texture1_mask;
-    public TextureMap    texture2_map;
-    public TextureMap    texture2_mask;
-    public TextureMap    opacity_map;
-    public TextureMap    opacity_mask;
-    public TextureMap    bump_map;
-    public TextureMap    bump_mask;
-    public TextureMap    specular_map;
-    public TextureMap    specular_mask;
-    public TextureMap    shininess_map;
-    public TextureMap    shininess_mask;
-    public TextureMap    self_illum_map;
-    public TextureMap    self_illum_mask;
-    public TextureMap    reflection_map;
-    public TextureMap    reflection_mask;
-    public int           autorefl_map_flags;
-    public int           autorefl_map_anti_alias;  /* 0=None, 1=Low, 2=Medium, 3=High */
-    public int           autorefl_map_size;
-    public int           autorefl_map_frame_step;
+    public boolean       isAdditive;
+    public boolean       selfIllumFlag; /* bool */
+    public float         selfIllum;
+    public boolean       useFalloff;
+    public int           shading = DefaultShading;
+    public boolean       soften;        /* bool */
+    public boolean       faceMap;       /* bool */
+    public boolean       twoSided;      /* Material visible from back */
+    public boolean       mapDecal;      /* bool */
+    public boolean       useWire;
+    public boolean       useWireAbs;
+    public float         wireSize = DefaultWireSize;
+    public TextureMap    texture1Map = new TextureMap();
+    public TextureMap    texture1Mask = new TextureMap();
+    public TextureMap    texture2Map = new TextureMap();
+    public TextureMap    texture2Mask = new TextureMap();
+    public TextureMap    opacityMap = new TextureMap();
+    public TextureMap    opacityMask = new TextureMap();
+    public TextureMap    bumpMap = new TextureMap();
+    public TextureMap    bumpMask = new TextureMap();
+    public TextureMap    specularMap = new TextureMap();
+    public TextureMap    specularMask = new TextureMap();
+    public TextureMap    shininessMap = new TextureMap();
+    public TextureMap    shininessMask = new TextureMap();
+    public TextureMap    selfIllumMap = new TextureMap();
+    public TextureMap    selfIllumMask = new TextureMap();
+    public TextureMap    reflectionMap = new TextureMap();
+    public TextureMap    reflectionMask = new TextureMap();
+    public int           autoreflMapFlags;
+    public int           autoreflMapAntiAlias;  /* 0=None, 1=Low, 2=Medium, 3=High */
+    public int           autoreflMapSize;
+    public int           autoreflMapFrameStep;
 
 
     public Material(Model model, Reader r, Chunk cp)
@@ -82,5 +88,131 @@ public final class Material
     public void read(Model model, Reader r, Chunk cp)
         throws Fv3Exception
     {
+        while (cp.in()){
+            Chunk cp1 = r.next(cp);
+            switch (cp1.id){
+            case Chunk.MAT_NAME:
+                this.name = r.readString(cp1);
+                break;
+            case Chunk.MAT_AMBIENT:
+                r.readMaterialColor(cp1,this.ambient);
+                break;
+            case Chunk.MAT_DIFFUSE:
+                r.readMaterialColor(cp1,this.diffuse);
+                break;
+            case Chunk.MAT_SPECULAR:
+                r.readMaterialColor(cp1,this.specular);
+                break;
+            case Chunk.MAT_SHININESS:
+                this.shininess = r.readPercentageS16(cp1,this.shininess);
+                break;
+            case Chunk.MAT_SHIN2PCT:
+                this.shinStrength = r.readPercentageS16(cp1,this.shinStrength);
+                break;
+            case Chunk.MAT_TRANSPARENCY:
+                this.transparency = r.readPercentageS16(cp1,this.transparency);
+                break;
+            case Chunk.MAT_XPFALL:
+                this.falloff = r.readPercentageS16(cp1,this.falloff);
+                break;
+            case Chunk.MAT_SELF_ILPCT:
+                this.selfIllum = r.readPercentageS16(cp1,this.selfIllum);
+                break;
+            case Chunk.MAT_USE_XPFALL:
+                this.useFalloff = true;
+                break;
+            case Chunk.MAT_REFBLUR:
+                this.blur = r.readPercentageS16(cp1,this.blur);
+                break;
+            case Chunk.MAT_USE_REFBLUR:
+                this.useBlur = true;
+                break;
+            case Chunk.MAT_SHADING:
+                this.shading = r.readS16(cp1);
+                break;
+            case Chunk.MAT_SELF_ILLUM:
+                this.selfIllumFlag = true;
+                break;
+            case Chunk.MAT_TWO_SIDE:
+                this.twoSided = true;
+                break;
+            case Chunk.MAT_DECAL:
+                this.mapDecal = true;
+                break;
+            case Chunk.MAT_ADDITIVE:
+                this.isAdditive = true;
+                break;
+            case Chunk.MAT_FACEMAP:
+                this.faceMap = true;
+                break;
+            case Chunk.MAT_PHONGSOFT:
+                this.soften = true;
+                break;
+            case Chunk.MAT_WIRE:
+                this.useWire = true;
+                break;
+            case Chunk.MAT_WIREABS:
+                this.useWireAbs = true;
+                break;
+            case Chunk.MAT_WIRE_SIZE:
+                this.wireSize = r.readFloat(cp1);
+                break;
+            case Chunk.MAT_TEXMAP:
+                this.texture1Map.read(model,r,cp1);
+                break;
+            case Chunk.MAT_TEXMASK:
+                this.texture1Mask.read(model,r,cp1);
+                break;
+            case Chunk.MAT_TEX2MAP:
+                this.texture2Map.read(model,r,cp1);
+                break;
+            case Chunk.MAT_TEX2MASK:
+                this.texture2Mask.read(model,r,cp1);
+                break;
+            case Chunk.MAT_OPACMAP:
+                this.opacityMap.read(model,r,cp1);
+                break;
+            case Chunk.MAT_OPACMASK:
+                this.opacityMask.read(model,r,cp1);
+                break;
+            case Chunk.MAT_BUMPMAP:
+                this.bumpMap.read(model,r,cp1);
+                break;
+            case Chunk.MAT_BUMPMASK:
+                this.bumpMask.read(model,r,cp1);
+                break;
+            case Chunk.MAT_SPECMAP:
+                this.specularMap.read(model,r,cp1);
+                break;
+            case Chunk.MAT_SPECMASK:
+                this.specularMask.read(model,r,cp1);
+                break;
+            case Chunk.MAT_SHINMAP:
+                this.shininessMap.read(model,r,cp1);
+                break;
+            case Chunk.MAT_SHINMASK:
+                this.shininessMask.read(model,r,cp1);
+                break;
+            case Chunk.MAT_SELFIMAP:
+                this.selfIllumMap.read(model,r,cp1);
+                break;
+            case Chunk.MAT_SELFIMASK:
+                this.selfIllumMask.read(model,r,cp1);
+                break;
+            case Chunk.MAT_REFLMAP:
+                this.reflectionMap.read(model,r,cp1);
+                break;
+            case Chunk.MAT_REFLMASK:
+                this.reflectionMask.read(model,r,cp1);
+                break;
+            case Chunk.MAT_ACUBIC:
+                cp1.skip(1);
+                this.autoreflMapAntiAlias = r.readS8(cp1);
+                this.autoreflMapFlags = r.readS16(cp1);
+                this.autoreflMapSize = r.readS32(cp1);
+                this.autoreflMapFrameStep = r.readS32(cp1);
+                break;
+            }
+        }
     }
 }

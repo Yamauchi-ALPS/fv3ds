@@ -33,10 +33,10 @@ public final class Mesh
     public int       object_flags;                 /**< @see ObjectFlags */ 
     public int       color;                        /**< Index to editor palette [0..255] */
     public float[][] matrix = Matrix.New();        /**< Transformation matrix for mesh data */
-    public float[][] vertices = {Vertex.New()};
-    public float[][] texcos;
-    public int[]     vflags;
-    public Face[]    faces;               
+    public float[][] vertices = {};
+    public float[][] texcos = {};
+    public int[]     vflags = {};
+    public Face[]    faces = {};
     public String    box_front;
     public String    box_back;
     public String    box_left;
@@ -77,8 +77,8 @@ public final class Mesh
             bounds = new Vertex.Box(true);
             this.bounds = bounds;
             for (int cc = 0, count = this.vertices.length; cc < count; ++cc) {
-                Vector.Min(bounds.min.vertex, this.vertices[cc]);
-                Vector.Max(bounds.max.vertex, this.vertices[cc]);
+                Vector.Min(bounds.min, this.vertices[cc]);
+                Vector.Max(bounds.max, this.vertices[cc]);
             }
         }
         return bounds;
@@ -135,8 +135,10 @@ public final class Mesh
             case Chunk.POINT_ARRAY: {
                 int count = r.readU16(cp2);
                 this.vertices = Vertex.Resize(this.vertices,count);
-                this.texcos = Vertex.Resize(this.texcos,count);
-                this.vflags = Vertex.Resize(this.vflags,count);
+                if (0 != this.texcos.length)
+                    this.texcos = Vertex.Resize(this.texcos,count);
+                if (0 != this.vflags.length)
+                    this.vflags = Vertex.Resize(this.vflags,count);
                 for (int i = 0; i < count; ++i) {
                     r.readVector(cp2, this.vertices[i]);
                 }
@@ -147,7 +149,8 @@ public final class Mesh
                 int nflags = r.readU16(cp2);
                 int count = ((this.vertices.length >= nflags)?(this.vertices.length):(nflags));
                 this.vertices = Vertex.Resize(this.vertices,count);
-                this.texcos = Vertex.Resize(this.texcos,count);
+                if (0 != this.texcos.length)
+                    this.texcos = Vertex.Resize(this.texcos,count);
                 this.vflags = Vertex.Resize(this.vflags,count);
                 for (int i = 0; i < nflags; ++i) {
                     this.vflags[i] = r.readU16(cp2);
