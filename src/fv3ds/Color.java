@@ -28,6 +28,9 @@ public final class Color {
     public final static float[] New(){
         return New.clone();
     }
+    public final static float[] New(float v){
+        return new float[]{v,v,v};
+    }
 
 
     public float[] color = New.clone();

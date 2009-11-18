@@ -46,8 +46,8 @@ public final class Key
     public float   tens;
     public float   cont;
     public float   bias;
-    public float   ease_to;
-    public float   ease_from;
+    public float   easeTo;
+    public float   easeFrom;
     public float[] value = {0f,0f,0f,0f};
 
 
@@ -56,4 +56,25 @@ public final class Key
     }
 
 
+    public void read(Model model, Reader r, Chunk cp)
+        throws Fv3Exception
+    {
+        this.frame = r.readS32(cp);
+        this.flags = r.readU16(cp);
+        if (0 != (this.flags & Key.Flags.USE_TENS.flag)){
+            this.tens = r.readFloat(cp);
+        }
+        if (0 != (this.flags & Key.Flags.USE_CONT.flag)){
+            this.cont = r.readFloat(cp);
+        }
+        if (0 != (this.flags & Key.Flags.USE_BIAS.flag)){
+            this.bias = r.readFloat(cp);
+        }
+        if (0 != (this.flags & Key.Flags.USE_EASE_TO.flag)){
+            this.easeTo = r.readFloat(cp);
+        }
+        if (0 != (this.flags & Key.Flags.USE_EASE_FROM.flag)){
+            this.easeFrom = r.readFloat(cp);
+        }
+    }
 }

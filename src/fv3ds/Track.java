@@ -69,5 +69,44 @@ public final class Track
             throw new Fv3Exception();
     }
 
-
+    public void read(Model model, Reader r, Chunk cp)
+        throws Fv3Exception
+    {
+        this.flags = r.readU16(cp);
+        cp.skip(8);
+        int nkeys = r.readS32(cp);
+        this.keys = new Key[nkeys];
+        Key[] keys = this.keys;
+        switch (this.type){
+        case BOOL:
+            for (int i = 0; i < nkeys; ++i) {
+                keys[i] = new Key();
+                keys[i].read(model,r,cp);
+                keys[i].frame = r.readS32(cp);
+            }
+            break;
+        case FLOAT:
+            for (int i = 0; i < nkeys; ++i) {
+                keys[i] = new Key();
+                keys[i].read(model,r,cp);
+                keys[i].value[0] = r.readFloat(cp);
+            }
+            break;
+        case VECTOR:
+            for (int i = 0; i < nkeys; ++i) {
+                keys[i] = new Key();
+                keys[i].read(model,r,cp);
+                r.readVector(cp, keys[i].value);
+            }
+            break;
+        case QUAT:
+            for (int i = 0; i < nkeys; ++i) {
+                keys[i] = new Key();
+                keys[i].read(model,r,cp);
+                keys[i].value[3] = r.readFloat(cp);
+                r.readVector(cp, keys[i].value);
+            }
+            break;
+        }
+    }
 }

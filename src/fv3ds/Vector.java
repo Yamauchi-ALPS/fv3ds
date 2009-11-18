@@ -55,6 +55,8 @@ public final class Vector
     }
     /**
      * Subtract two vectors.
+     * 
+     *  c = (a - b)
      *
      * @param c Result.
      * @param a Addend.
@@ -114,6 +116,16 @@ public final class Vector
      */
     public final static float Length(float c[]) {
         return (float)Math.sqrt(c[0]*c[0] + c[1]*c[1] + c[2]*c[2]);
+    }
+    /**
+     * @return c = ((a + b) / 2)
+     */
+    public final static float[] Midpoint(float[] a, float[] b){
+        float[] c = Vertex.New();
+        c[Vertex.X] = ((a[Vertex.X] + b[Vertex.X]) / 2f);
+        c[Vertex.Y] = ((a[Vertex.Y] + b[Vertex.Y]) / 2f);
+        c[Vertex.Z] = ((a[Vertex.Z] + b[Vertex.Z]) / 2f);
+        return c;
     }
     /**
      * Normalize a vector.

@@ -48,10 +48,10 @@ public final class TextureMap
     public int         user_id;
     public Object      user_ptr;
     public String      name;
-    public int         flags;
-    public float       percent;
+    public int         flags = 0x10;
+    public float       percent = 1.0f;
     public float       blur;
-    public float[]     scale = {0f,0f};
+    public float[]     scale = {1.0f,1.0f};
     public float[]     offset = {0f,0f};
     public float       rotation;
     public float[]     tint_1 = {0f,0f,0f};
@@ -66,4 +66,65 @@ public final class TextureMap
     }
 
 
+    public void read(Model model, Reader r, Chunk cp)
+        throws Fv3Exception
+    {
+        while (cp.in()){
+            Chunk cp1 = r.next(cp);
+            switch(cp1.id){
+            case Chunk.INT_PERCENTAGE:
+                this.percent = 1.0f * r.readS16(cp1) / 100.0f;
+                break;
+            case Chunk.MAT_MAPNAME:
+                this.name = r.readString(cp1);
+                break;
+            case Chunk.MAT_MAP_TILING:
+                this.flags = r.readU16(cp1);
+                break;
+            case Chunk.MAT_MAP_TEXBLUR: 
+                this.blur = r.readFloat(cp1);
+                break;
+            case Chunk.MAT_MAP_USCALE:
+                this.scale[0] = r.readFloat(cp1);
+                break;
+            case Chunk.MAT_MAP_VSCALE:
+                this.scale[1] = r.readFloat(cp1);
+                break;
+            case Chunk.MAT_MAP_UOFFSET:
+                this.offset[0] = r.readFloat(cp1);
+                break;
+            case Chunk.MAT_MAP_VOFFSET:
+                this.offset[1] = r.readFloat(cp1);
+                break;
+            case Chunk.MAT_MAP_ANG:
+                this.rotation = r.readFloat(cp1);
+                break;
+            case Chunk.MAT_MAP_COL1:
+                this.tint_1[0] = 1.0f * r.readU8(cp1) / 255.0f;
+                this.tint_1[1] = 1.0f * r.readU8(cp1) / 255.0f;
+                this.tint_1[2] = 1.0f * r.readU8(cp1) / 255.0f;
+                break;
+            case Chunk.MAT_MAP_COL2:
+                this.tint_2[0] = 1.0f * r.readU8(cp1) / 255.0f;
+                this.tint_2[1] = 1.0f * r.readU8(cp1) / 255.0f;
+                this.tint_2[2] = 1.0f * r.readU8(cp1) / 255.0f;
+                break;
+            case Chunk.MAT_MAP_RCOL:
+                this.tint_r[0] = 1.0f * r.readU8(cp1) / 255.0f;
+                this.tint_r[1] = 1.0f * r.readU8(cp1) / 255.0f;
+                this.tint_r[2] = 1.0f * r.readU8(cp1) / 255.0f;
+                break;
+            case Chunk.MAT_MAP_GCOL:
+                this.tint_g[0] = 1.0f * r.readU8(cp1) / 255.0f;
+                this.tint_g[1] = 1.0f * r.readU8(cp1) / 255.0f;
+                this.tint_g[2] = 1.0f * r.readU8(cp1) / 255.0f;
+                break;
+            case Chunk.MAT_MAP_BCOL:
+                this.tint_b[0] = 1.0f * r.readU8(cp1) / 255.0f;
+                this.tint_b[1] = 1.0f * r.readU8(cp1) / 255.0f;
+                this.tint_b[2] = 1.0f * r.readU8(cp1) / 255.0f;
+                break;
+            }
+        }
+    }
 }

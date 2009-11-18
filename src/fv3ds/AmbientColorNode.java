@@ -32,7 +32,7 @@ public final class AmbientColorNode
 
     public AmbientColorNode(){
         super(Type.AMBIENT_COLOR);
+        this.name = "$AMBIENT$";
     }
-
 
 }
