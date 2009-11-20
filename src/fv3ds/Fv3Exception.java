@@ -23,10 +23,16 @@ package fv3ds;
 public final class Fv3Exception
     extends java.lang.RuntimeException
 {
-    public Fv3Exception(String m) {
+    public Fv3Exception(String m){
         super(m);
     }
-    public Fv3Exception() {
+    public Fv3Exception(){
         super();
+    }
+    public Fv3Exception(String m, Throwable t){
+        super(m,t);
+    }
+    public Fv3Exception(Throwable t){
+        super(t);
     }
 }
