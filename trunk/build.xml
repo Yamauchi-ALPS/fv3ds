@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="fv3ds" default="jar">
+<project name="fv3ds" default="update">
 
   <tstamp/>
 
@@ -16,6 +16,14 @@
   <property name="compiler.deprecation" value="false"/>
   <property name="compiler.encoding" value="utf-8"/>
 
+
+  <property file="${user.home}/fv3.build.properties"/>
+  <condition property="update.fv3tk.not">
+    <not>
+      <isset property="copyto.fv3tk.fv3ds"/>
+    </not>
+  </condition>
+
   <import file="ant/build.in.java.xml"/>
   <import file="ant/build.in.version.xml"/>
 
@@ -24,6 +32,12 @@
       <include name="**/*.jar" />
     </fileset>
   </path>
+
+  <target name="update" depends="jar, update-fv3tk" />
+
+  <target name="update-fv3tk" unless="update.fv3tk.not" depends="jar">
+    <copy file="${target.jar}" tofile="${copyto.fv3tk.fv3ds}"/>
+  </target>
 
   <target name="compile" depends="version">
     <compile src="${src}" ver="${ver.src}" bin="${bin}" classpath.id="lib.path"/>
