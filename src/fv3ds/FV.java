@@ -17,7 +17,6 @@
  */
 package fv3ds;
 
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
 
 /**
@@ -29,7 +28,7 @@ public final class FV
     /**
      * Copy a data list into a direct memory buffer for OGL.
      */
-    public final static Buffer Copy(float[] list){
+    public final static ByteBuffer Copy(float[] list){
         int length = list.length;
         int size = (4 * length);
         ByteBuffer direct = ByteBuffer.allocateDirect(size);
@@ -52,7 +51,7 @@ public final class FV
      * 
      * @param args Has type "float[][]"
      */
-    public final static Buffer Copy(float[]... args){
+    public final static ByteBuffer Copy(float[]... args){
         int argc = args.length;
         int count = 0;
         for (int aa = 0; aa < argc; aa++){
