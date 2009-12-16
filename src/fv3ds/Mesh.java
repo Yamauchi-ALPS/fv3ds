@@ -22,6 +22,9 @@
  */
 package fv3ds;
 
+import fv3.math.Matrix;
+import fv3.math.Vector;
+
 import java.nio.Buffer;
 
 public final class Mesh
@@ -32,7 +35,7 @@ public final class Mesh
     public Object    user_ptr;
     public int       object_flags;                 /**< @see ObjectFlags */ 
     public int       color;                        /**< Index to editor palette [0..255] */
-    public float[][] matrix = Matrix.New();        /**< Transformation matrix for mesh data */
+    public float[][] matrix = Matrix.New2();        /**< Transformation matrix for mesh data */
     public float[][] vertices = {};
     public float[][] texcos = {};
     public int[]     vflags = {};
@@ -45,7 +48,7 @@ public final class Mesh
     public String    box_bottom;
     public MapType   map_type = MapType.NONE;
     public float[]   map_pos = Vertex.New();
-    public float[][] map_matrix = Matrix.New();
+    public float[][] map_matrix = Matrix.New2();
     public float     map_scale;
     public float[]   map_tile = {0f,0f};
     public float[]   map_planar_size = {0f,0f};
@@ -214,7 +217,7 @@ public final class Mesh
                 }
                 this.map_scale = r.readFloat(cp2);
 
-                Matrix.Identity(this.map_matrix);
+                Matrix.Identity2(this.map_matrix);
                 for (int i = 0; i < 4; i++) {
                     for (int j = 0; j < 3; j++) {
                         this.map_matrix[i][j] = r.readFloat(cp2);
@@ -244,22 +247,22 @@ public final class Mesh
             }
         }
 
-        if (Matrix.Det(this.matrix) < 0.0) {
+        if (Matrix.Det2(this.matrix) < 0.0) {
             /* Flip X coordinate of vertices if mesh matrix
              * has negative determinant
              */
             float[][] inv_matrix = new float[4][4], M = new float[4][4];
             float[] tmp = new float[3];
 
-            Matrix.Copy(inv_matrix, this.matrix);
-            Matrix.Inv(inv_matrix);
+            Matrix.Copy2(inv_matrix, this.matrix);
+            Matrix.Inv2(inv_matrix);
 
-            Matrix.Copy(M, this.matrix);
-            Matrix.Scale(M, -1.0f, 1.0f, 1.0f);
-            Matrix.Mult(M, M, inv_matrix);
+            Matrix.Copy2(M, this.matrix);
+            Matrix.Scale2(M, -1.0f, 1.0f, 1.0f);
+            Matrix.Mult2(M, M, inv_matrix);
 
             for (int i = 0, z = this.vertices.length; i < z; ++i) {
-                Vector.Transform(tmp, M, this.vertices[i]);
+                Vector.Transform2(tmp, M, this.vertices[i]);
                 Vector.Copy(this.vertices[i], tmp);
             }
         }

@@ -70,6 +70,7 @@
     <sequential>
       <copy todir="@{bin}">
         <fileset dir="@{src}">
+          <exclude name="**/*.mf"/>
           <exclude name="**/*.java"/>
         </fileset>
       </copy>
