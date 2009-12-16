@@ -18,6 +18,8 @@
  */
 package fv3ds;
 
+import fv3.math.Vector;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.Buffer;

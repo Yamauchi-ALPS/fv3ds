@@ -54,7 +54,7 @@ public final class Camera {
         r.readVector(cp,this.target);
         this.roll = r.readFloat(cp);
         float s = r.readFloat(cp);
-        if (Fv3Math.EPSILON > Math.abs(s))
+        if (fv3.math.Vector.EPSILON > Math.abs(s))
             this.fov = 45f;
         else
             this.fov = (2400f / s);

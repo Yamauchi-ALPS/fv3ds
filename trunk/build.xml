@@ -45,7 +45,11 @@
   <target name="jar" depends="compile" description="Create JAR">
     <archive.cleanly/>
     <archive.resources src="${src}" bin="${bin}"/>
-    <archive target="${target.jar}" bin="${bin}" manifest="${src}/Manifest.mf" />
+    <archive target="${target.jar}" bin="${bin}" manifest="${src}/Manifest.mf">
+      <pack>
+        <zipgroupfileset dir="lib" includes="**/fv3-math-*.jar"/>
+      </pack>
+    </archive>
     <drop bin="${bin}"/>
   </target>
   <target name="clean" description="Clean up project.">
