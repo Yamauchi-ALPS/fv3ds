@@ -36,7 +36,7 @@
   <target name="update" depends="jar, update-fv3tk" />
 
   <target name="update-fv3tk" unless="update.fv3tk.not" depends="jar">
-    <copy file="${target.jar}" tofile="${copyto.fv3tk.fv3ds}"/>
+    <copy file="${target.jar}" todir="${copyto.fv3tk.fv3ds}"/>
   </target>
 
   <target name="compile" depends="version">
