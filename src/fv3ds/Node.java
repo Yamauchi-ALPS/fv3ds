@@ -22,7 +22,6 @@
  */
 package fv3ds;
 
-import fv3.math.Matrix;
 
 /**
  * Animation frame nodes.
@@ -95,7 +94,7 @@ public abstract class Node
     public int        node_id = 65535;
     public String     name;
     public int        flags;
-    public float[][]  matrix = Matrix.New2();
+    public float[][]  matrix = Matrix.New();
 
 
     protected Node(Type type){

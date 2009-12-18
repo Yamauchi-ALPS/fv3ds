@@ -17,7 +17,6 @@
  */
 package fv3ds;
 
-import fv3.math.Vector;
 
 /**
  * 
