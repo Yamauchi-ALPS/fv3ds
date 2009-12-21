@@ -19,9 +19,14 @@
 
   <property file="${user.home}/fv3.build.properties"/>
   <condition property="update.fv3tk.not">
-    <not>
-      <isset property="copyto.fv3tk.fv3ds"/>
-    </not>
+    <or>
+      <not>
+        <isset property="copyto.fv3tk.fv3ds"/>
+      </not>
+      <not>
+        <available file="${copyto.fv3tk.fv3ds}" type="dir"/>
+      </not>
+    </or>
   </condition>
 
   <import file="ant/build.in.java.xml"/>
